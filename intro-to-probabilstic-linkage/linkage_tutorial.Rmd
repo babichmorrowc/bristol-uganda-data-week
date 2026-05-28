@@ -1,0 +1,212 @@
+---
+title: "Probabilistic data linkage tutorial"
+author: "Cecina Babich Morrow"
+date: "2026-05-27"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Probabilistic data linkage
+
+This tutorial demonstrates how to perform probabilistic data linkage in R using `fastLink`.
+
+
+## Install and load necessary packages
+
+First, ensure that you have `fastLink` and the `tidyverse` suite installed and loaded:
+
+```{r}
+# Install fastLink if you haven't already
+if (!requireNamespace("fastLink", quietly = TRUE)) {
+  install.packages("fastLink")
+}
+# Load the fastLink package
+library(fastLink)
+
+# Install tidyverse if you haven't already
+if (!requireNamespace("tidyverse", quietly = TRUE)) {
+  install.packages("tidyverse")
+}
+# Load the tidyverse package
+library(tidyverse)
+```
+
+## Toy dataset
+
+Let's start by looking at the probabilities of match on the very small toy dataset from the presentation.
+
+```{r}
+# Load the dataset
+example_data_1 <- read_csv("data/example-data-1.csv")
+
+# View the dataset
+print(example_data_1)
+```
+
+We can run `fastLink` on this dataset to see the probabilities of match for each pair of records. Don't worry too much about what all the arguments to the `fastLink` function mean at this stage -- we will go through them in more detail later.
+
+```{r}
+# Run fastLink on the dataset
+example_fl_1 <- fastLink(
+  dfA = example_data_1,
+  dfB = example_data_1,
+  varnames = colnames(example_data_1),
+  stringdist.match = colnames(example_data_1)
+)
+
+# Print the probabilities that each pair of records is a match
+print(example_fl_1$matches)
+print(example_fl_1$posterior)
+```
+
+## `samplematch` dataset
+
+Now we can use a larger dataset to see how to implement probabilistic data linkage in practice. We will use the `samplematch` dataset to explore. Add some code to the chunk below to examine the two preloaded dataframes, which are named `dfA` and `dfB`:
+
+```{r}
+# Load the built-in data
+data(samplematch)
+
+# YOU TRY:
+# View the first few rows of dfA and dfB
+
+# YOU TRY:
+# Print the column names of each dataframe
+
+```
+
+### Basic `fastLink` arguments
+
+The `fastLink` function has several arguments that allow you to customize the data linkage process. Here are some of the key arguments:
+
+- `dfA` and `dfB`: The two dataframes you want to link.
+- `varnames`: A vector of column names that you want to use for matching. These should be the same in both dataframes.
+- `stringdist.match`: A vector of column names for which you want to use string distance matching. This is useful for columns that may have typos or variations in spelling.
+
+Note that for any variables included in `varnames`, but not in `stringdist.match`, `fastLink` will consider two records to match on that variable if the values are exactly the same. For variables included in `stringdist.match`, `fastLink` will calculate a string similarity between the values and consider them a match if the distance is above a certain threshold.
+
+Let's start by running a preliminary linkage using `fastLink` and the set of arguments listed above:
+
+```{r}
+# YOU TRY:
+matches1 <- fastLink(
+  
+)
+```
+
+We can summarise the results of this preliminary linkage:
+
+```{r}
+summary(matches1)
+```
+
+Let's investigate the different components of the summary output:
+
++ The columns: these represent different cutoffs for the posterior probabilities of match.
+  + For example, the column `85%` shows the number of matches that have a posterior probability of match greater than or equal to 0.85. 
+  + The `Exact` column shows the number of matches that have a posterior probability of match equal to 1, which means that they are considered an exact match.
++ `Match Count`: the number of pairs of records that are considered matches at each cutoff.
++ `Match Rate`: the proportion of pairs of records that are considered matches at each cutoff, out of all possible pairs of records.
++ `FDR`: the false discovery rate, which is the expected proportion of false matches among the pairs of records that are considered matches at each cutoff.
++ `FNR`: the false negative rate, which is the expected proportion of true matches that are not identified as matches at each cutoff.
+
+Next, extract the matches from the `matches1` object using the `getMatches()` function and view the first few rows:
+
+```{r}
+# YOU TRY:
+matches1_extracted <- getMatches(
+
+)
+# View the first few rows:
+
+```
+
+We can also view the distribution of posterior probabilities, i.e. the probabilities that each pair of records is a match:
+
+```{r}
+# YOU TRY:
+
+```
+
+What can you tell from this histogram? Is it particularly informative?
+
+### String distance arguments
+
+Beyond the basic arguments to the `fastLink` function that we used above, we have even more options to customize the data linkage process. Currently, when we use `stringdist.match`, we consider two records to match on a given variable if the string similarity is greater than or equal to 0.94. There are several arguments that can adjust the way we perform string matching:
+
++ `partial.match`: A vector of column names for which you want to use partial string matching. This is useful for columns that may have variations in formatting (e.g., "St" vs "Street").
++ `cut.a`: A numeric value between 0 and 1 that sets the threshold for considering two records a full match based on string similarity. The default is 0.94, but you can adjust this based on the level of similarity you want to require for a match.
++ `cut.p`: A numeric value between 0 and 1 that sets the threshold for considering two records a partial match based on string similarity. The default is 0.88, but you can adjust this based on the level of similarity you want to require for a partial match.
+
+Try re-running the `fastLink` function using `partial.match`, and adjusting the `cut.a` and `cut.p` thresholds to see how it affects the results:
+
+```{r}
+# YOU TRY:
+matches2 <- fastLink(
+  
+)
+
+# Summarise results:
+
+
+# Extract matches:
+
+
+# View distribution of posterior probabilities:
+
+```
+
+### Numeric matching
+
+In addition to matching on string variables, we can also match on numeric variables. For example, we might want to match on `birthyear` using a numeric distance rather than a string distance, if we think it is possible that a birth year might be entered one off from the actual value, for example. The arguments pertaining to numeric matching are:
+
++ `numeric.match`: A vector of column names for which you want to use numeric distance matching. This is useful for columns that contain numeric values where small differences may still indicate a match (e.g., birth year).
++ `cut.a.num`: A numeric value that sets the threshold for considering two records a full match based on numeric distance. The default is 1, which means that two records will be considered a full match if the absolute difference between the values is less than or equal to 1.
++ `cut.p.num`: A numeric value that sets the threshold for considering two records a partial match based on numeric distance. The default is 2.5, which means that two records will be considered a partial match if the absolute difference between the values is less than or equal to 2.5.
+
+Try re-running the `fastLink` function using `numeric.match`, and adjusting the `cut.a.num` and `cut.p.num` thresholds to see how it affects the results:
+
+```{r}
+# YOU TRY:
+matches3 <- fastLink(
+  
+)
+
+# Summarise results:
+
+
+# Extract matches:
+
+
+# View distribution of posterior probabilities:
+
+```
+
+### Reweighting names
+
+If two people have the same first name, the amount of evidence we have that they are a match depends on how common that first name is in the population. For example, my first name is "Cecina". Since I have never met another Cecina, if I see two records with the first name "Cecina", that is strong evidence that those two records are a match. On the other hand, "Chris" is a relatively common name, so two records with the first name "Chris" are less likely to be a match than two records with the first name "Cecina". The following arguments allow us to reweight the evidence of a match based on the frequency of the first name in the population:
+
++ `reweight.names`: A logical value indicating whether to reweight the evidence of a match based on the frequency of the first name in the population. The default is `FALSE`, but you can set it to `TRUE` to enable this feature.
++ `firstname.field`: A character string specifying the name of the column that contains the first names in your data. This is required if you set `reweight.names` to `TRUE`.
+
+Try re-running the `fastLink` function using `reweight.names` to see how it affects the results:
+
+```{r}
+# YOU TRY:
+matches4 <- fastLink(
+  
+)
+
+# Summarise results:
+
+
+# Extract matches:
+
+
+# View distribution of posterior probabilities:
+
+```
+
