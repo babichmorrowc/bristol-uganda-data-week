@@ -1,0 +1,343 @@
+---
+title: "Introduction to R: Part 1"
+author: "Cecina Babich Morrow"
+date: "2026-05-28"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Welcome to R
+
+R is a programming language widely used among statisticians (and Cecina's personal favourite language). This tutorial will introduce you the basics of R and lay the foundation for applying R to data analysis, visualisation, linkage, and beyond.
+
+This file is an RMarkdown file, which allows us to create a notebook-style report of our work. RMarkdown files can save code, run code, and generate reports. They contain three basic types of content: the header at the top with title, author, etc.; code chunks surrounded by ` ``` `, and text (which can be formatted in different ways). The following basic functionalities will help you get started with RMarkdowns:
+
++ To insert a new code chunk, click the "Insert" button and select "R"
+* To run a code chunk, press the green play button on the right, or select the dropdown menu by the "Run" button and click "Run Current Chunk"
+* To "knit" the document into a pdf or html, click the "Knit" button
+
+Let's start by running the following code chunk:
+
+```{r}
+cat("Hello, R!")
+```
+
+That code chunk contained a single line of R code. In addition to code itself, we can also write comments using the `#` symbol. These comments won't be run by R, but they are a crucial part of the coding process since they help make your code easily understandable to your collaborators (and your future self):
+
+```{r}
+# Tell R hello:
+cat("Hello, R!")
+```
+
+# Variables and data types
+
+A variable is a symbolic name that refers to an object. Variables are used to store data and can be assigned values using the `<-` operator (or the `=` operator, but `<-` is a convention in R).
+
+For example:
+
+```{r}
+# YOU TRY:
+name <- "Cecina"
+age <- 29
+```
+
+There are specific naming conventions that must be followed for variables in R:
++ Variable names can include letters (both uppercase and lowercase), digits, periods (`.`) and underscores (`_`), but they cannot start with a digit or underscore. Examples of valid variable names include `my_var` and `var_2`; invalid examples would be `2var` (starts with a digit) or `my-var` (contains a hyphen).
++ Variable names are case-sensitive, meaning `myVariable`, `MyVariable`, and `MYVARIABLE` would be considered different variables and you could store 3 completely different things in them (but you really shouldn't)
+
+On that last point, variable naming is an important part of programming. Much like writing a good comment, creating a good variable name helps both you and your collaborators quickly understand what your code is intended to do. Variable naming is more of an art than a science, as you often have to balance the length of the variable name with how descriptive it is. A good variable name should be descriptive enough to give you a clear idea of what the variable is for, but not so long that it becomes cumbersome to use in your code.
+
+## Basic data types
+
+A data type is a classification that specifies which type of value a variable holds. For example, above, we created `name`, which contains a series of letters, and `age`, which is a number. As we will learn below, these are different data types.
+
+Some key points about data types in R:
+
++ R is dynamically typed, meaning you don’t need to declare the type of a variable explicitly.
++ You can use the `class()` function to check the data type of a variable.
++ Data types determine what operations can be performed on the data.
++ You can convert between different data types using built-in functions like `as.integer()`, `as.numeric()` and `as.character()`
+
+### Numeric types
+
+| Data type | Description                                              | Example                   |
+|    ---    |                            ---                           |             ---           |
+| `integer` | Represents whole numbers without decimal points          | `a <- as.integer(12)`     |
+| `numeric` | Represents real numbers (both integers and decimals)     | `b <- as.numeric(7.3)`    |
+| `complex` | Represents complex numbers with real and imaginary parts | `c <- as.complex(2i + 7)` |
+
+```{r}
+a <- 12L
+b <- 7.3
+c <- 2i + 7
+
+cat("A:", a, class(a))
+cat("B:", b, class(b))
+cat("C:", c, class(c))
+```
+
+**Try it yourself:** What numeric type is your `age` variable from above?
+
+```{r}
+# YOU TRY:
+class(age)
+```
+
+
+### Text types
+
+| Data type   | Description                                              | Example                   |
+|    ---      |                            ---                           |             ---           |
+| `character` | Represents text (strings)                                | `name <- "Cecina"`        |
+
+
+```{r}
+# Print the class of the name variable from above
+cat("Name:", name, class(name))
+```
+
+Note, just because something has numbers in it doesn't mean it is numeric! 
+
+```{r}
+pi1 <- 3.14159
+cat("pi:", pi1, class(pi))
+
+pi2 <- "3.14159"
+cat("pi:", pi2, class(pi))
+
+# YOU TRY:
+# What happens when you try to do math with pi1 vs pi2?
+2*pi1
+
+# 2*pi2
+```
+
+### Logical types
+
+| Data type | Description                                              | Example                   |
+|    ---    |                            ---                           |             ---           |
+| `logical` | Represents boolean values (TRUE or FALSE)                | `is_R_fun <- TRUE`        |
+
+Logical (or Boolean) variables allow us to represent conditions and make decisions in our code. For some examples, see the following code:
+
+```{r}
+over_18 <- age > 18
+cat("Over 18?", over_18, class(over_18), "\n")
+
+is_R_fun <- TRUE
+cat("Is R fun?", is_R_fun, class(is_R_fun), "\n")
+
+# Is R not fun?
+!is_R_fun
+# Is R fun or are you over 18?
+is_R_fun | over_18
+# Is R fun and are you over 18?
+is_R_fun & over_18
+```
+
+**Try it yourself:** Without running any code, can you tell what is the data type of these variables?
+
+```{r}
+x <- 32
+number_of_participants <- "1017"
+Friday <- TRUE
+y <- 1L
+a <- 10 < 8
+```
+
+## Data structures
+
+Thus far, all of the variables we have created contain a single piece of information. This would be a very tedious way to conduct data science, however, so we need to learn how to store multiple pieces of information in a single variable. R has several data structures that allow us to do this, including vectors, lists, and data frames.
+
+### Vectors
+
+A vector is a one-dimensional array that can hold multiple values of the same data type. Vectors are created using the `c()` function, which stands for "combine" or "concatenate".
+
+```{r}
+# Create a numeric vector
+num_vector <- c(1, 2, 3, 4, 5)
+
+# Create a vector of strings
+str_vector <- c("apple", "banana", "cherry")
+```
+
+The elements of a vectors can be accessed using square brackets using the index of the element you want to access. R uses 1-based indexing, meaning the first element is accessed with index 1.
+
+```{r}
+# Access the first element of the numeric vector
+num_vector[1]
+
+# YOU TRY:
+# Reassign the first element of str_vector to a new fruit
+str_vector[1] <- "pineapple"
+str_vector
+```
+
+As well as being able to select individual elements from a data structure, you can also grab sections of it at once. This process of asking for subsections of a data structure is called slicing.
+
+```{r}
+# Get the first three elements of num_vector
+num_vector[1:3]
+
+# YOU TRY:
+# Get the last two elements of str_vector
+str_vector[2:3]
+```
+
+### Lists
+
+Lists are a bit more versatile data structures as they can contain elements of different data types, including other lists.
+
+```{r}
+my_list <- list(
+  numbers = 1:5,
+  fruit = c("apple", "banana", "cherry"),
+  nested_list = list("a", "b", "c")
+)
+```
+
+You can access list elements by name or position:
+
+```{r}
+# Access the 'fruit' element by name
+my_list$fruit
+
+# Access the 'numbers' element by position
+my_list[[1]]
+```
+
+### Data frames
+
+Data frames are table-like structures that can contain columns of different data types. They are one of the most commonly used data structures for data analysis in R. Note that all the columns in a data frame have the same number of elements.
+
+```{r}
+my_data <- data.frame(
+  id = 1:5,
+  fruit = c("apple", "banana", "cherry", "blueberry", "kiwi"),
+  colour = c("red", "yellow", "red", "blue", "green")
+)
+```
+
+**Try it yourself:** You can view the data frame by running `View(my_data)` in your console, or by clicking on the data frame in your environment pane.
+
+To list the column names of a data frame, you can use the `colnames()` function:
+
+```{r}
+colnames(my_data)
+```
+
+
+You can access a specific column of a data frame using the `$` operator:
+
+```{r}
+# Access the 'fruit' column
+my_data$fruit
+```
+
+You can access a specific row of a data frame using square brackets:
+
+```{r}
+# Access the third row
+my_data[3, ]
+```
+
+## Control structures
+
+Code often contains control structures, which allow you to control the flow of your program based on certain conditions. Flow control structures, such as `if`, allow programmers to dictate the order and conditions under which specific instructions are executed within a program. Looping structures, such as `for` and `while` (which we won't discuss here, but you can read more about at https://bristol-training.github.io/intro-r-1/pages/053-while.html), enable the repetition of code blocks, which is crucial for tasks that require iterating through data performing calculations multiple items.
+
+### Conditional if
+
+Conditional `if` statements allow programs to make decisions and execute different code based on whether certain conditions are `TRUE` or `FALSE` (recall our Boolean variables earlier).
+
+The basic syntax for conditional statements is `if (condition) {}`, where `condition` is an expression that evaluates to either `TRUE` or `FALSE`, i.e. a Boolean. If it’s `TRUE`, the indented code block under the if statement will run. If `FALSE`, it will be skipped. For example, the below code will print “You are an adult” if your age is 18 or higher:
+
+```{r}
+if (age >= 18) {
+  cat("You are an adult.")
+}
+```
+
+You can also add an else clause to specify code to run if the condition is FALSE:
+
+```{r}
+# YOU TRY:
+if (age >= 18) {
+  cat("You are an adult.")
+} else {
+  cat("You are not an adult.")
+}
+
+# What happens if you reassign age to a different value and run the code again?
+# YOU TRY:
+age <- 16
+if (age >= 18) {
+  cat("You are an adult.")
+} else {
+  cat("You are not an adult.")
+}
+```
+
+#### Ordering your options
+
+When working out which lines of code will be run, R will work down the list of `if`, `else if`, and `else` and will run the first one that matches. Once it’s matched one, it will not bother checking to see if any of those later on would have matched. This means that you should order your questions from most-specific to least-specific.
+
+For example, if you want to do one thing for positive numbers, but something special instead for numbers greater than 100, then you should put the more specific check first:
+
+```{r}
+# YOU TRY:
+# What is wrong with this code?
+my_number = 106
+if (my_number > 0) {
+    cat(my_number, "is positive")
+} else if (my_number > 100) {
+    cat(my_number, "is large")
+} else {
+    cat(my_number, "negative")
+}
+
+# Corrected code:
+if (my_number > 100) {
+    cat(my_number, "is large")
+} else if ( my_number > 0) {
+    cat(my_number, "is positive")
+} else {
+    cat(my_number, "negative")
+}
+```
+
+#### Combining conditions
+
+It is possible to ask two or more questions in one go by combining them with `&` (and) and `|` (or). So, if you want to check is a number is smaller than ten (`my_number < 10`) and is not equal to zero (`my_number != 0`), you can use:
+
+```{r}
+if (my_number < 10 & my_number != 0) {
+    cat(my_number, "is a single-digit number")
+}
+```
+
+### For loops
+
+It is possible to make R repeat certain lines of code using loops. The ability to run a line of code multiple times is the first large step on your road to making your code more structured and reusable.
+
+Imagine we have strings in a vector that we want to print. We could start by calling `cat` three times to create a program like:
+
+```{r}
+cat(str_vector[1])
+cat(str_vector[2])
+cat(str_vector[3])
+```
+
+This code works, but it involved a lot of re-typing (or copying and pasting). Imagine if `str_vector` had 100 different elements. Every time you find yourself copying and pasting a lot of code, this is a good sign that you might want to try a different approach. In the case of sitations like this, a loop can help:
+
+```{r}
+for (fruit in str_vector) {
+  cat(fruit, "\n")
+}
+```
+
+Now we have a simple, readable program that will work no matter how many elements are in `str_vector`. The loop works by creating a temporary variable (in this case, `fruit`) that takes on the value of each element in `str_vector` one at a time. The code inside the loop (in this case, `cat(fruit, "\n")`) is run once for each element in `str_vector`, with `fruit` taking on the value of the current element.
+
+
