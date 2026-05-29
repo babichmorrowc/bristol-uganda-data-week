@@ -1,0 +1,369 @@
+---
+title: 'Welcome to the Tidyverse'
+author: "Cecina Babich Morrow"
+date: "2026-05-29"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# R packages
+
+R packages are collections of tools built by the R community to extend the functionality of R. They can include functions, data sets, and documentation. To use a package in R, you first need to install it and then load it into your R session. We will be working with a large ecosystem of packages known as `tidyverse` which includes packages like `ggplot2`, `dplyr`, and `tidyr` that are designed for data manipulation and visualization.
+
+To install a package, you can use the `install.packages()` function. For example, to install the `tidyverse` package, you would run:
+
+```{r}
+install.packages("tidyverse")
+```
+
+Once a package is installed, you need to load it into your R session using the `library()` function. For example, to load the `tidyverse` package, you would run:
+
+```{r}
+library(tidyverse)
+```
+
+# Tidyverse
+
+R is a fairly old programming language, with different syntactical styles of coding. The `tidyverse` is a collection of R packages that share a common design philosophy, grammar, and data structures, in an attempt to provide some coherence to the R ecosystem. The `tidyverse` includes packages for data manipulation (`dplyr`), data visualization (`ggplot2`), and data tidying (`tidyr`), among others.
+
+The `tidyverse` philosophy is built around the core concept of "tidy data," which is a standardized way of organizing data that makes it easier to work with. In tidy data:
+
++ Each variable is a column; each column is a variable.
++ Each observation is a row; each row is an observation.
++ Each value is a cell; each cell is a single value.
+
+When you installed and loaded `tidyverse` above, you loaded nine core modules:
+
++ `dplyr` for data manipulation
++ `ggplot2` for data visualization
++ `tidyr` for data tidying
++ `stringr` for string manipulation
++ `readr` for reading data
++ `lubridate` for working with dates and times
++ `forcats` for working with categorical variables
++ `purrr` for functional programming
++ `tibble` for modern data frames
+
+## Pipes
+
+The tidyverse uses the concept of "pipes" to make code more readable and easier to write. The pipe operator (`%>%`) allows you to chain together multiple operations in a clear and concise way. Instead of nesting functions inside each other, you can use pipes to pass the output of one function directly into the next.
+
+A forward pipe forwards the variable on the left into the first argument to the function on the right, e.g.:
+
+```{r}
+"kitten" %>% print()
+```
+
+This is identical to:
+
+```{r}
+print("kitten")
+```
+
+For a single function like this, it may seem silly and actually less readable to use the pipe, but once you start needing to pass outputs from one function to another to another, the pipe can make your code much more readable.
+
+# Loading data into R
+
+Now that we have some background on R in general and the tidyverse in specific, we need to start working with some data to see R in action. We will be working with a dataset of medical appointments in Brazil that is openly available on Kaggle. The data in in a CSV file, which stands for "comma-separated values." This is a common format for storing tabular data, where each row represents an observation and each column represents a variable.
+
+To load a CSV file into R, we can use the `read_csv()` function from the `readr` package, which is part of the tidyverse. This function reads a CSV file and creates a data frame in R that we can work with.
+
+```{r}
+# Import the dataset
+appt_data <- read_csv("data/appointment_data.csv")
+```
+
+**Try it yourself:** Using whatever method you choose, view the dataset. What columns do we have access to? What types of data are in each column (e.g., numeric, character, date)?
+
+Let's look at the column names of the data:
+
+```{r}
+# YOU TRY:
+colnames(appt_data)
+```
+
+Do you see any issues with these column names, given what we know about variable naming in R?
+
+Since we have some column names that won't work well in R, we have an excuse to use one of my favourite packages, `janitor`. This package cleans up column names for you, making them easier to work with in R. We can use the `clean_names()` function to clean up our column names:
+
+```{r}
+# YOU TRY:
+# Install janitor
+install.packages("janitor")
+# Load janitor
+library(janitor)
+
+# Clean column names
+appt_data_clean <- appt_data %>%
+  clean_names()
+
+# YOU TRY:
+# View our new column names:
+colnames(appt_data_clean)
+```
+
+
+# Data manipulation: `dplyr`
+
+The `dplyr` package is a powerful tool for data manipulation in R. It provides a set of functions that allow you to filter, select, arrange, and summarize your data in a clear and concise way. Some of the most commonly used `dplyr` functions include:
+
++ `filter()`: Subset rows based on conditions.
++ `select()`: Choose specific columns to keep.
++ `arrange()`: Sort rows by the values of one or more columns.
++ `mutate()`: Create new columns or modify existing ones.
++ `summarize()`: Create summary statistics of your data.
+
+## Filtering
+
+The `filter()` function allows you to subset your data based on specific conditions. For example, if we wanted to filter our appointment data to only include appointments where the patient showed up, we could use the following code:
+
+```{r}
+attended_appts <- appt_data_clean %>%
+  filter(no_show == "No")
+
+# YOU TRY:
+# How many rows did our original appointment data have?
+nrow(appt_data_clean)
+# How many rows do we have in our attended appointments data?
+nrow(attended_appts)
+# How many columns do we have in our original appointment data?
+ncol(appt_data_clean)
+# How many columns do we have in our attended appointments data?
+ncol(attended_appts)
+```
+
+When we filter data, we (potentially) remove rows based on conditions determined by one (or more) columns. This means that the number of rows in our filtered data may be less than the number of rows in our original data, but the number of columns will remain the same.
+
+## Selecting
+
+What if we want to remove columns from our data instead of rows? We can use the `select()` function to choose specific columns to keep. For example, if we only wanted to keep the `patient_id`, `appointment_id`, and `no_show` columns, we could use the following code:
+
+```{r}
+three_col_appt_data <- appt_data_clean %>%
+  select(patient_id, appointment_id, no_show)
+
+# YOU TRY:
+# How many rows do we have in our three column appointment data?
+nrow(three_col_appt_data)
+# How many columns do we have in our three column appointment data?
+ncol(three_col_appt_data)
+```
+
+When we select columns, we keep all of the rows in our data, but we may have fewer columns than our original data.
+
+## Arranging
+
+The `arrange()` function allows you to sort your data by the values of one or more columns. For example, if we wanted to sort our appointment data by age in ascending order, we could use the following code:
+
+```{r}
+appt_data_sorted <- appt_data_clean %>%
+  arrange(age)
+```
+
+**Try it yourself:** When we sorted the data by age, did you notice anything odd about the ages of the patients? What about if we sorted the age in descending order?
+
+```{r}
+# YOU TRY:
+appt_data_sorted_desc <- appt_data_clean %>%
+  arrange(desc(age))
+```
+
+What might we want to do about these odd ages?
+
+## Mutating
+
+The `mutate()` function allows you to create new columns or modify existing ones. For example, if we wanted to create a new column that indicates whether the patient is a senior (age 60 or older), we could use the following code:
+
+```{r}
+appt_data_clean <- appt_data_clean %>%
+  mutate(is_senior = age >= 60)
+```
+
+**Try it yourself:** Create a new column called `sms_no_show` that indicates whether the patient received an SMS reminder but did not show up for their appointment.
+
+```{r}
+# YOU TRY:
+appt_data_clean <- appt_data_clean %>%
+  mutate(sms_no_show = (sms_received == 1) & (no_show == "Yes"))
+```
+
+We can also use `mutate()` to modify existing columns. We have a lot of variables that indicate a logical value, e.g. `sms_received` and `no_show`, but these columns aren't actually logical variables in R. We can use `mutate()` to convert these columns to logical variables:
+
+```{r}
+# YOU TRY:
+# Check the class of all columns in our dataset
+sapply(appt_data_clean, class)
+
+# YOU TRY:
+# Convert the following columns to logical values:
+# scholarship, hipertension, diabetes, alcoholism, handcap, sms_received, no_show
+appt_data_clean <- appt_data_clean %>%
+  mutate(
+    scholarship = as.logical(scholarship),
+    hipertension = as.logical(hipertension),
+    diabetes = as.logical(diabetes),
+    alcoholism = as.logical(alcoholism),
+    handcap = as.logical(handcap),
+    sms_received = as.logical(sms_received),
+    no_show = no_show == "Yes"
+  )
+```
+
+## Summarizing
+
+The `summarize()` function allows you to create summary statistics of your data. For example, if we wanted to calculate the average age of patients in our appointment data, we could use the following code:
+
+```{r}
+average_age <- appt_data_clean %>%
+  summarize(avg_age = mean(age, na.rm = TRUE))
+```
+
+We can summarize values of a column by groups using the `group_by()` function in combination with `summarize()`. For example, if we wanted to calculate the average age of patients by whether they showed up for their appointment or not, we could use the following code:
+
+```{r}
+average_age_by_show <- appt_data_clean %>%
+  group_by(no_show) %>%
+  summarize(avg_age = mean(age, na.rm = TRUE))
+```
+
+**Try it yourself:** Calculate the percentage of no-shows by gender. This is a trickier problem. Consider breaking it into pieces:
++ Calculate the number of appointments by gender (try the `n()` function)
++ Calculate the number of no-shows by gender (how can you use a logical variable to do this?)
++ Calculate the percentage of no shows using the preceding two values
+
+```{r}
+# YOU TRY:
+no_show_by_gender <- appt_data_clean %>% 
+  group_by(gender) %>% 
+  summarize(
+    total_appointments = n(),
+    no_shows = sum(no_show),
+    no_show_percentage = (no_shows / total_appointments) * 100
+  )
+```
+
+# Data visualization: `ggplot2`
+
+The `ggplot2` package is a powerful tool for data visualization in R. The core idea behind `ggplot2` is the concept of "grammar of graphics," which allows you to build plots layer by layer by adding different components. While we built our `dplyr` syntax around pipes, our `ggplot2` syntax will be built around the `+` operator, which allows us to add layers to our plot. The grammar of the package is based on three main components:
+
++ Data: a tibble containing tidy data with one observation per row, and one variable per column
++ Aesthetic mappings: relationship between variables in the data and visual properties in the graph specified via the `aes()` function
++ Layers: specific renderings of the data that describe how to render each observation
+
+Then our code will take the general form:
+
+`ggplot( data, aesthetic ) + layer1 + layer2 + layer3...`
+
+Let's start with a simple example. If we wanted to look at the distribution of age for all appointments, we could make a histogram:
+
+```{r}
+# Histogram of age
+ggplot(appt_data_clean, aes(x = age)) +
+  geom_histogram() +
+  labs(title = "Distribution of Age", x = "Age", y = "Count")
+```
+
+What if we now wanted to look at the distribution of ages broken down by attended vs. no-show appointments?
+
+```{r}
+# Histogram of age by no-show status
+ggplot(appt_data_clean, aes(x = age, fill = no_show)) +
+  geom_histogram(position = "dodge") +
+  labs(title = "Distribution of Age by No-Show Status", x = "Age", y = "Count", fill = "No Show")
+```
+
+You'll notice a couple key modifications we made:
+
++ We added a `fill` aesthetic to our `aes()` function, which allows us to fill the bars of our histogram based on the `no_show` variable. (It is easy to confuse `fill` with `color`, which changes the color of the outline of the bars instead of the fill. Try it yourself to see the difference!)
++ We added `position = "dodge"` to our `geom_histogram()`, which allows us to place the bars for attended and no-show appointments side by side instead of stacked on top of each other.
+
+This figure is a bit hard to read, partly because there are far more attended appointments than no-show appointments. We might want to try a different type of visualisation, like a boxplot or a violin plot. You can beautify these to your heart's desire:
+
+```{r}
+# YOU TRY:
+# Boxplot of age by no-show status
+ggplot(appt_data_clean, aes(x = no_show, y = age)) +
+  geom_boxplot() +
+  labs(title = "Boxplot of Age by No-Show Status", x = "No Show", y = "Age")
+
+# Violin plot of age by no-show status
+ggplot(appt_data_clean, aes(x = no_show, y = age)) +
+  geom_violin() +
+  labs(title = "Violin Plot of Age by No-Show Status", x = "No Show", y = "Age")
+```
+
+# Working with dates in R
+
+We learned about several different data types in R already, but we have yet to discuss the quagmire that is working with dates in R.
+
+We have two date/time related fields in our dataset: `scheduled_day` and `appointment_day`:
+
+```{r}
+# YOU TRY:
+# Check the classes of scheduled_day and appointment_day
+class(appt_data_clean$scheduled_day)
+class(appt_data_clean$appointment_day)
+```
+
+Both of these columns have type `POSIXct` and `POSIXt`, which are two of the date/time classes in R. The `ct` stands for "calendar time," and the `t` stands for "time." These classes represent date and time as the number of seconds since January 1, 1970.
+
+The `lubridate` package, which is part of the tidyverse, provides a set of functions that make it easier to work with dates and times in R. The core idea behind `lubridate` is that there are different "classes" of date and time objects in R, and `lubridate` provides functions to convert between these classes and to perform operations on them.
+
+We can extract parts of our date/time objects using functions like `year()`, `month()`, `day()`, `hour()`, and `minute()`. For example, if we wanted to extract the year from our `scheduled_day` column, we could use the following code:
+
+```{r}
+# Extract year from scheduled_day
+appt_data_clean <- appt_data_clean %>%
+  mutate(scheduled_year = year(scheduled_day))
+
+# Check what years appointments were scheduled in our dataset:
+unique(appt_data_clean$scheduled_year)
+```
+
+We can also perform calculations using date/time objects. For example, if we wanted to calculate the (approximate) birth year of a patient based on their age and the date of their appointment, we could use the following code:
+
+```{r}
+# Calculate birth year
+appt_data_clean <- appt_data_clean %>%
+  mutate(birth_year = year(appointment_day - years(age)))
+```
+
+This code takes the `appointment_day`, subtracts the number of years corresponding to the patient's age, and then extracts the year from the resulting date to get an approximate birth year for each patient.
+
+# Putting it all together
+
+We can combine our newfound `dplyr`, `ggplot2`, and `lubridate` skills to calculate a new column based on date/time values and then visualize it.
+
+First, calculate the amount of time between appointment scheduling and the appointment itself, which we can call `lead_time`. Some things to note:
+
++ The `scheduled_day` column contains a date and time, while the `appointment_day` column contains only a date. How might you extract only the date from the `scheduled_day` column?
++ Using the internet, figure out how to calculate the difference between two date/time objects in R
++ Consider what unit you want to use for your `lead_time` variable (e.g., days, hours, minutes) and how you would specify that in your code
+
+```{r}
+# YOU TRY
+appt_data_clean <- appt_data_clean %>%
+  mutate(lead_time = difftime(appointment_day, date(scheduled_day), units = "days"))
+```
+
+Now that we have our `lead_time` variable, we can visualize it. For example, we could look at the distribution of lead times:
+
+```{r}
+# YOU TRY
+ggplot(appt_data_clean, aes(x = lead_time)) +
+  geom_histogram() +
+  labs(title = "Distribution of Lead Time", x = "Lead Time (days)", y = "Count")
+```
+
+Finally, we could look at the distribution of lead times by no-show status:
+
+```{r}
+# YOU TRY
+ggplot(appt_data_clean, aes(x = no_show, y = lead_time)) +
+  geom_boxplot() +
+  labs(title = "Distribution of Lead Time by No-Show Status", x = "Lead Time (days)", y = "Count", fill = "No Show")
+```
+

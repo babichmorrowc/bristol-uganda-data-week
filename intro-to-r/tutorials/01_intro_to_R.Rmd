@@ -40,8 +40,8 @@ For example:
 
 ```{r}
 # YOU TRY:
-name <- "Cecina"
-age <- 29
+name <- 
+age <- 
 ```
 
 There are specific naming conventions that must be followed for variables in R:
@@ -83,7 +83,7 @@ cat("C:", c, class(c))
 
 ```{r}
 # YOU TRY:
-class(age)
+
 ```
 
 
@@ -110,9 +110,9 @@ cat("pi:", pi2, class(pi))
 
 # YOU TRY:
 # What happens when you try to do math with pi1 vs pi2?
-2*pi1
 
-# 2*pi2
+
+
 ```
 
 ### Logical types
@@ -172,7 +172,7 @@ num_vector[1]
 
 # YOU TRY:
 # Reassign the first element of str_vector to a new fruit
-str_vector[1] <- "pineapple"
+
 str_vector
 ```
 
@@ -244,7 +244,7 @@ You can access a specific row of a data frame using square brackets:
 my_data[3, ]
 ```
 
-## Control structures
+# Control structures
 
 Code often contains control structures, which allow you to control the flow of your program based on certain conditions. Flow control structures, such as `if`, allow programmers to dictate the order and conditions under which specific instructions are executed within a program. Looping structures, such as `for` and `while` (which we won't discuss here, but you can read more about at https://bristol-training.github.io/intro-r-1/pages/053-while.html), enable the repetition of code blocks, which is crucial for tasks that require iterating through data performing calculations multiple items.
 
@@ -264,20 +264,12 @@ You can also add an else clause to specify code to run if the condition is FALSE
 
 ```{r}
 # YOU TRY:
-if (age >= 18) {
-  cat("You are an adult.")
-} else {
-  cat("You are not an adult.")
-}
+
 
 # What happens if you reassign age to a different value and run the code again?
 # YOU TRY:
-age <- 16
-if (age >= 18) {
-  cat("You are an adult.")
-} else {
-  cat("You are not an adult.")
-}
+age <- 
+
 ```
 
 #### Ordering your options
@@ -299,13 +291,7 @@ if (my_number > 0) {
 }
 
 # Corrected code:
-if (my_number > 100) {
-    cat(my_number, "is large")
-} else if ( my_number > 0) {
-    cat(my_number, "is positive")
-} else {
-    cat(my_number, "negative")
-}
+
 ```
 
 #### Combining conditions
