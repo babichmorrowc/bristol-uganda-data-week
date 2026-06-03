@@ -27,7 +27,8 @@ When it's time to switch typing partners, the person typing needs to commit thei
 
 *Switching from directing --> typing:*
 1. Go to the Git window of RStudio and click on the blue arrow: this will pull the edits from the remote copy to your machine.
-2. Open the script file. Check to see that the edits your partner made are there.
+2. Click on the drop-down menu of branches in RStudio (likely says `main` currently), and select the branch that your partner made.
+3. Open the script file. Check to see that the edits your partner made are there.
 
 ## Try it yourself!
 
