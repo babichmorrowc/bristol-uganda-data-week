@@ -73,7 +73,7 @@ To load a CSV file into R, we can use the `read_csv()` function from the `readr`
 
 ```{r}
 # Import the dataset
-appt_data <- read_csv("data/appointment_data.csv")
+appt_data <- read_csv("../data/appointment_data.csv")
 ```
 
 **Try it yourself:** Using whatever method you choose, view the dataset. What columns do we have access to? What types of data are in each column (e.g., numeric, character, date)?
