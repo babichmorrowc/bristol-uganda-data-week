@@ -33,5 +33,7 @@ All materials for this training are available in the folder [`intro-to-probabili
 All other training materials and presentations are in the [`other-presentations`](https://github.com/babichmorrowc/bristol-uganda-data-week/tree/main/other-presentations) folder:
 
 + [Writing your first grant application](https://github.com/babichmorrowc/bristol-uganda-data-week/blob/main/other-presentations/writing%20first%20funding%20application.pdf): Ettie Unwin's presentation about grant writing
-+ [Feasibility of linking maternal health data without unique identifiers in Uganda](https://github.com/babichmorrowc/bristol-uganda-data-week/blob/main/other-presentations/Linkage%20Presentation-Final_JC_09_06_2026.pptx): Presentation delivered by Josiline Chemutai and contributed to by Cecina Babich Morrow about our probabilistic linkage results so far
++ [Building research projects](https://github.com/babichmorrowc/bristol-uganda-data-week/blob/main/other-presentations/Research_Projects_Workshop.pdf): Josiline Chumutai's presentation about creating a research project
++ [Data quality assessment and working group](https://github.com/babichmorrowc/bristol-uganda-data-week/blob/main/other-presentations/Data%20Quality.pdf): Josiline Chumutai's presentation about measuring data quality
++ [Feasibility of linking maternal health data without unique identifiers in Uganda](https://github.com/babichmorrowc/bristol-uganda-data-week/blob/main/other-presentations/Linkage%20Presentation-Final_JC_09_06_2026.pdf): Presentation delivered by Josiline Chemutai and contributed to by Cecina Babich Morrow about our probabilistic linkage results so far
 
